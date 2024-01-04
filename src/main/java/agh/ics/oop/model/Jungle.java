@@ -19,26 +19,70 @@ public class Jungle {
         this.owner = owner;
         setPlants();
     }
-    private void setPlants(){
-        Random rand = new Random();
-        double random = 0.3 + (0.6 - 0.3) * rand.nextDouble(); //losowanie z zakresu 0,3-0,6 procentu
+    public void setPlants(){
+        Random rand1 = new Random();
+        double random = 0.3 + (0.6 - 0.3) * rand1.nextDouble(); //losowanie z zakresu 0,3-0,6 procentu
         //obszaru jaki będą stanowić rośliny.
-        int plantsToSet = (int)(random*area);
+        int plantsToSet = (int)(random*area) - adjustToOwnerPlants();
         int counter = 0;
-        while(counter <= plantsToSet){
-            int randWidth = rand.nextInt(width);
-            int randHeight = rand.nextInt(height);
-            int x = coordinates.getLeftSide() + randWidth;
-            int y = coordinates.getBottom() + randHeight;
-            Vector2d position = new Vector2d(x, y);
-            if(plants.get(position) == null){
-                Plant plant = new Plant(position);
-                plants.put(position, plant);
-                owner.placePlant(position, plant);
-                counter++;
+        if(plantsToSet > 0){
+            while(counter <= plantsToSet){
+                Random rand2 = new Random();
+                int randWidth = rand2.nextInt(width);
+                int randHeight = rand2.nextInt(height);
+                int x = coordinates.getLeftSide() + randWidth;
+                int y = coordinates.getBottom() + randHeight;
+                Vector2d position = new Vector2d(x, y);
+                if(plants.get(position) == null && owner.isOccupiedByPlant(position) == false &&
+                        owner.isOccupiedByAnimal(position) == false){
+                    Plant plant = new Plant(position);
+                    plants.put(position, plant);
+                    owner.placePlant(position, plant);
+                    counter++;
+                }
+
             }
-
         }
-
     }
+    public int adjustToOwnerPlants(){
+        int counter = 0;
+        for(Map.Entry<Vector2d, Plant> entry : this.owner.getPlants().entrySet()){
+            if(fitsToMap(entry.getKey())){
+                if(plantInJungle(entry.getValue())){
+                    counter ++;
+                }else{
+                    plants.put(entry.getKey(), entry.getValue());
+                    counter++;
+                }
+            }
+        }
+        return counter;
+    }
+    public void removePlant(Vector2d position){
+        plants.remove(position);
+    }
+    public Coordinates getCoordinates(){
+        return this.coordinates;
+    }
+    public void placePlant(Vector2d position, Plant plant){
+        if(plants.get(position) == null){
+            plants.put(position, plant);
+        }
+    }
+    public boolean plantInJungle(Plant plant){
+        if(plants.get(plant.getPosition()) != null){
+            return true;
+        }
+        return false;
+    }
+    public boolean fitsToMap(Vector2d position){
+        if(position.getX() >= this.coordinates.getLeftSide() &&
+        position.getX() <= this.coordinates.getRightSide() &&
+        position.getY() >= this.coordinates.getBottom() &&
+        position.getY() <= this.coordinates.getCeiling()){
+            return true;
+        }
+        return false;
+    }
+
 }

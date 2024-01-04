@@ -1,5 +1,5 @@
 package agh.ics.oop.model;
-public class Animal implements WorldElement {
+public class Animal {
     private MapDirection orientation;
     private Vector2d position;
 
@@ -7,7 +7,7 @@ public class Animal implements WorldElement {
         this.position = new Vector2d(2,2);
         this.orientation = MapDirection.NORTH;
     }
-    public Animal(Vector2d initialPosition){
+   /* public Animal(Vector2d initialPosition){
         this.position = initialPosition;
         this.orientation = MapDirection.NORTH;
     }
@@ -55,6 +55,6 @@ public class Animal implements WorldElement {
     }
     public Vector2d getPosition(){
         return this.position;
-    }
+    }*/
 
 }

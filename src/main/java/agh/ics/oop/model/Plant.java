@@ -8,4 +8,7 @@ public class Plant {
         this.energy = 10;
         this.position = position;
     }
+    public Vector2d getPosition(){
+        return this.position;
+    }
 }
