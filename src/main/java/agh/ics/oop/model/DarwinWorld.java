@@ -12,6 +12,7 @@ public class DarwinWorld {
     private HashMap<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
     private final Map<Vector2d, Plant> plants = new HashMap<>();
     private Jungle jungle;
+    private int minimalReproduceEnergy;
     private PoisonousArea poisonousArea;
     protected int width;
     protected int height;
@@ -354,6 +355,83 @@ public class DarwinWorld {
         return false;
     }
     public void reproduceAnimals(){
+        for(Map.Entry<Vector2d, ArrayList<Animal>> entry : animals.entrySet()){
+            Vector2d position = entry.getKey();
+            ArrayList<Animal> aniList = entry.getValue();
+            Animal animal1 = aniList.get(0);
+            Animal animal2 = aniList.get(1);
+            if(aniList.size() >= 2){
+                animal1 = aniList.get(0);
+                animal2 = aniList.get(1);
+                aniList.sort((Animal a1, Animal a2) -> Integer.compare(a1.getEnergy(), a2.getEnergy()));
+                if(aniList.get(1).getEnergy() > aniList.get(2).getEnergy()){
+                    animal1 = aniList.get(0);
+                    animal2 = aniList.get(1);
+                }else{
+                    aniList.sort((Animal a1, Animal a2) -> Integer.compare(a1.getAge(), a2.getAge()));
+                    if(aniList.get(1).getAge() > aniList.get(2).getAge()){
+                        animal1 = aniList.get(0);
+                        animal2 = aniList.get(1);
+                    }else{
+                        aniList.sort((Animal a1, Animal a2) -> Integer.compare(a1.getKids(), a2.getKids()));
+                        if(aniList.get(1).getKids() > aniList.get(2).getKids()){
+                            animal1 = aniList.get(0);
+                            animal2 = aniList.get(1);
+                        }else{
+                            Random rand = new Random();
+                            int rand1 = rand.nextInt(aniList.size());
+                            int rand2 = rand.nextInt(aniList.size());
+                            while(rand1 == rand2){
+                                rand2 = rand.nextInt(aniList.size());
+                            }
+                            animal1 = aniList.get(rand1);
+                            animal2 = aniList.get(rand2);
+                        }
+                    }
+                }
 
+                int energy1 = animal1.getEnergy();
+                int energy2 = animal2.getEnergy();
+                if(energy1 >= minimalReproduceEnergy && energy2 >= minimalReproduceEnergy){
+                    int sumEnergy = energy1 + energy2;
+                    double daddysPart = energy1/sumEnergy;
+                    double mommysPart = energy2/sumEnergy;
+                    int kidsEnergy = (int)(daddysPart*energy1 + mommysPart*energy2);
+                    int daddyGenomeLength = (int)(daddysPart*animal1.getGenome().length);
+                    int mommyGenomeLength = (int)(mommysPart*animal1.getGenome().length);
+                    Random randParrent = new Random();
+                    int choice = randParrent.nextInt(2) + 1;
+                    int[] kidGenome = new int[animal1.getGenome().length];
+                    java.util.Arrays.fill(kidGenome, 0);
+                    if(choice == 1){
+                        for(int i=0; i<daddyGenomeLength; i++){
+                            kidGenome[i] = animal1.getGenome()[i];
+                        }
+                        for(int i=0; i<mommyGenomeLength; i++){
+                            kidGenome[i+daddyGenomeLength] = animal2.getGenome()[i+daddyGenomeLength];
+                        }
+                    }else{
+                        for(int i=0; i<mommyGenomeLength; i++){
+                            kidGenome[i] = animal2.getGenome()[i];
+                        }
+                        for(int i=0; i<daddyGenomeLength; i++){
+                            kidGenome[i+mommyGenomeLength] = animal1.getGenome()[i+mommyGenomeLength];
+                        }
+                    }
+                    mutateGenome(kidGenome);
+                    Animal kid = new Animal(new Vector2d(position.getX(), position.getY()), kidsEnergy, kidGenome);
+                }
+            }
+        }
+    }
+    public void mutateGenome(int[] genome){
+        int genomeLength = genome.length;
+        Random rand = new Random();
+        int mutationsAmount = rand.nextInt(genomeLength);
+        for(int i=0; i<mutationsAmount; i++){
+            int randomPosition = rand.nextInt(genomeLength);
+            int randomGene = rand.nextInt(8);
+            genome[randomPosition] = randomGene;
+        }
     }
 }
