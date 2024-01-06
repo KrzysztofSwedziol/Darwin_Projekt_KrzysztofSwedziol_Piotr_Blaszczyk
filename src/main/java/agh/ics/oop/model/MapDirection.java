@@ -28,12 +28,19 @@ public enum MapDirection {
     public MapDirection turn(int turns){
         MapDirection turned = this;
         for(int i=0; i<turns; i++){
-            turned = this.next();
+            turned = this.next(turned);
         }
         return this;
     }
-    public MapDirection next(){
-        switch(this){
+    public MapDirection turnBackwards(int turns){
+        MapDirection turned = this;
+        for(int i=0; i<turns; i++){
+            turned = this.previous(turned);
+        }
+        return this;
+    }
+    public MapDirection next(MapDirection turned){
+        switch(turned){
             case NORTH: return NORTHEAST;
             case NORTHEAST: return EAST;
             case EAST: return SOUTHEAST;
@@ -45,12 +52,16 @@ public enum MapDirection {
             default: throw new IllegalArgumentException();
         }
     }
-    public MapDirection previous(){
-        switch(this){
-            case NORTH: return WEST;
-            case EAST: return NORTH;
-            case SOUTH: return EAST;
-            case WEST: return SOUTH;
+    public MapDirection previous(MapDirection turned){
+        switch(turned){
+            case NORTH: return NORTHWEST;
+            case NORTHWEST: return WEST;
+            case WEST: return SOUTHWEST;
+            case SOUTHWEST: return SOUTH;
+            case SOUTH: return SOUTHEAST;
+            case SOUTHEAST: return EAST;
+            case EAST: return NORTHEAST;
+            case NORTHEAST: return NORTH;
             default: throw new IllegalArgumentException();
         }
     }
@@ -60,6 +71,10 @@ public enum MapDirection {
             case SOUTH: return new Vector2d(0, -1);
             case WEST: return new Vector2d(-1, 0);
             case EAST: return new Vector2d(1, 0);
+            case NORTHEAST: return new Vector2d(1,1);
+            case SOUTHEAST: return new Vector2d(1,-1);
+            case SOUTHWEST: return new Vector2d(-1,-1);
+            case NORTHWEST: return new Vector2d(-1,1);
             default: throw new IllegalArgumentException();
         }
     }

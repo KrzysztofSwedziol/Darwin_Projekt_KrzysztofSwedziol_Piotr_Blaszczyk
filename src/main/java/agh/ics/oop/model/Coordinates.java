@@ -12,6 +12,10 @@ public class Coordinates {
         this.ceiling = ceiling;
         this.bottom = bottom;
     }
+    public boolean isInside(Vector2d position) {
+        return position.getX() >= leftSide && position.getX() <= rightSide &&
+                position.getY() >= bottom && position.getY() <= ceiling;
+    }
     public int getRightSide(){
         return this.rightSide;
     }

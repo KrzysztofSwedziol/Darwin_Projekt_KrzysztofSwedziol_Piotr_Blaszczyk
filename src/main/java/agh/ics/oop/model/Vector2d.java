@@ -33,7 +33,7 @@ public class Vector2d {
     }
 
     public Vector2d add(Vector2d other){
-        Vector2d new_vector = new Vector2d(this.x + other.x, this.y + other.y);
+        Vector2d new_vector = new Vector2d(this.x + other.getX(), this.y + other.getY());
         return new_vector;
 
     }
