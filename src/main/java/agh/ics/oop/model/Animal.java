@@ -25,6 +25,9 @@ public class Animal {
         this.genome = genome;
         this.genomeLength = genome.length;
         this.currGen = 0;
+        this.age = 0;
+        this.kidsAmount = 0;
+        this.whereToStart = true;
     }
     public void rotate(int rotates){
         this.orientation = this.orientation.turn(rotates);
@@ -107,5 +110,29 @@ public class Animal {
     }
     public void updateAge(){
         this.age++;
+    }
+
+    @Override
+    public String toString() {
+        switch (this.orientation) {
+            case NORTH:
+                return "N ";
+            case NORTHEAST:
+                return "NE";
+            case EAST:
+                return "E ";
+            case SOUTHEAST:
+                return "SE";
+            case SOUTH:
+                return "S ";
+            case SOUTHWEST:
+                return "SW";
+            case WEST:
+                return "W ";
+            case NORTHWEST:
+                return "NW";
+            default:
+                return "";
+        }
     }
 }

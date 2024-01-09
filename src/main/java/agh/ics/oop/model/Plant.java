@@ -5,8 +5,8 @@ public class Plant {
     private Boolean poisonous;
     private Vector2d position;
 
-    public Plant(Vector2d position, boolean poisonous){
-        this.energy = 10;
+    public Plant(Vector2d position, boolean poisonous, int energy){
+        this.energy = energy;
         this.position = position;
         this.poisonous = poisonous;
     }
@@ -24,5 +24,10 @@ public class Plant {
     }
     public int getEnergy(){
         return this.energy;
+    }
+
+    @Override
+    public String toString() {
+        return "*";
     }
 }

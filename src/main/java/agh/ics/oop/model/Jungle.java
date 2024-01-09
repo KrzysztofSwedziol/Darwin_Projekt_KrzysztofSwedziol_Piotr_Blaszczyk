@@ -24,8 +24,8 @@ public class Jungle {
         int randX = rand.nextInt(this.width);
         int randY = rand.nextInt(height) + this.coordinates.getBottom();
         Vector2d position = new Vector2d(randX, randY);
-        if(owner.isOccupiedByAnimal(position) == false && owner.isOccupiedByPlant(position) == false){
-            Plant plant = new Plant(position, false);
+        if(owner.isOccupiedByPlant(position) == false){
+            Plant plant = new Plant(position, false, owner.getPlantEnergy());
             if(poisonousArea.doesFit(position)){
                 plant.setPoisonStatus(true);
             }

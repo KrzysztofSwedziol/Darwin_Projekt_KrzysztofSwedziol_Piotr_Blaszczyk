@@ -30,14 +30,14 @@ public enum MapDirection {
         for(int i=0; i<turns; i++){
             turned = this.next(turned);
         }
-        return this;
+        return turned;
     }
     public MapDirection turnBackwards(int turns){
         MapDirection turned = this;
         for(int i=0; i<turns; i++){
             turned = this.previous(turned);
         }
-        return this;
+        return turned;
     }
     public MapDirection next(MapDirection turned){
         switch(turned){

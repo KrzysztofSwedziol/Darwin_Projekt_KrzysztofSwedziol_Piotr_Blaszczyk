@@ -4,7 +4,6 @@ import agh.ics.oop.model.*;
 import java.util.ArrayList;
 
 public class Simulation  implements Runnable {
-    private List<MoveDirection> directions;
     private DarwinWorld map;
     private int days;
     public Simulation(DarwinWorld map, int days) {
@@ -15,6 +14,12 @@ public class Simulation  implements Runnable {
         for(int i=0; i<this.days; i++){
             System.out.println(map);
             map.updateDay();
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("Wystąpił błąd podczas próby uśpienia wątku: " + e.getMessage());
+            }
         }
 
     }

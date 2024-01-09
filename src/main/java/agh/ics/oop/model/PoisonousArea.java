@@ -12,8 +12,8 @@ public class PoisonousArea {
         this.height = height;
     }
     public boolean doesFit(Vector2d position){
-        return(position.getX() >= coordinates.getLeftSide() && position.getX() <= coordinates.getRightSide()
-        && position.getY() >= coordinates.getBottom() && position.getY() <= coordinates.getCeiling());
+        return(position.getX() >= coordinates.getLeftSide() && position.getX() < coordinates.getRightSide()
+        && position.getY() >= coordinates.getBottom() && position.getY() < coordinates.getCeiling());
 
     }
 }

@@ -13,45 +13,54 @@ public class DarwinWorld {
     private final Map<Vector2d, Plant> plants = new HashMap<>();
     private Jungle jungle;
     private int minimalReproduceEnergy;
+    private int plantEnergy;
     private PoisonousArea poisonousArea;
     protected int width;
     protected int height;
     protected int ID;
     protected int day;
+    private int initialAnimals;
+    private int initialAnimalEnergy;
+    private int genomeLength;
+    private double reproduceEnergyUsage;
+    private int mutationAmount;
     private int plantAmount;
     private int dailyPlants;
     private int area;
 
-    public DarwinWorld(int width, int height, int ID, int plantAmount, int dailyPlants){
+
+    public DarwinWorld(int width, int height, int ID, int plantAmount, int plantEnergy, int dailyPlants,
+        int initialAnimals, int initialAnimalEnergy, int minimalReproduceEnergy, double reproduceEnergyUsage,
+        int mutationAmount, int genomeLength){
         this.width = width;
         this.height = height;
         this.ID = ID;
         this.plantAmount = plantAmount;
+        this.plantEnergy = plantEnergy;
         this.dailyPlants = dailyPlants;
+        this.initialAnimals = initialAnimals;
+        this. initialAnimalEnergy = initialAnimalEnergy;
+        this.minimalReproduceEnergy = minimalReproduceEnergy;
+        this.reproduceEnergyUsage = reproduceEnergyUsage;
+        this.mutationAmount = mutationAmount;
+        this.genomeLength = genomeLength;
         this.area = this.width*this.height;
         setPoisonousArea();
         setJungle();
         dailyPlantUpdate(plantAmount);
+        randomPlaceAnimals(initialAnimals);
     }
     public void placePlant(Vector2d position, Plant plant){
-        if(isOccupiedByAnimal(position) == false && isOccupiedByPlant(position) == false) {
+        if(isOccupiedByPlant(position) == false) {
             plants.put(position, plant);
         }
     }
     public void placeAnimal(Vector2d position, Animal animal){
-        if(isOccupiedByPlant(position) == false && isOccupiedByAnimal(position) == false){
+        if(isOccupiedByAnimal(position) == false){
             ArrayList<Animal> animalsAtPosition = new ArrayList<>();
             animalsAtPosition.add(animal);
             animals.put(position, animalsAtPosition);
-        } if(isOccupiedByPlant(position) == true && isOccupiedByAnimal(position) == false) {
-            plants.remove(position);
-            ArrayList<Animal> animalsAtPosition = new ArrayList<>();
-            animalsAtPosition.add(animal);
-            animals.put(position, animalsAtPosition);
-        }if(isOccupiedByPlant(position) == false && isOccupiedByAnimal(position) == true){
-            animals.get(position).add(animal);
-        }if(isOccupiedByPlant(position) == true && isOccupiedByAnimal(position) == true){
-            plants.remove(position);
+        }if(isOccupiedByAnimal(position) == true){
             animals.get(position).add(animal);
         }
     }
@@ -78,7 +87,7 @@ public class DarwinWorld {
         this.jungle = equatorJungle;
     }
     public void setPoisonousArea(){
-        int side = (int)(Math.sqrt(area));
+        int side = (int)(Math.sqrt(0.2*area));
         Coordinates coordinates = new Coordinates(0,side,side,0);
         PoisonousArea poisonousArea = new PoisonousArea(coordinates, side, side);
         this.poisonousArea = poisonousArea;
@@ -91,7 +100,7 @@ public class DarwinWorld {
         moveAnimals();
         eatPlants();
         reproduceAnimals();
-        updateAnimalAge();
+        //updateAnimalAge();
     }
     public void dailyPlantUpdate(int plantAmount){
         Random rand = new Random();
@@ -113,8 +122,8 @@ public class DarwinWorld {
         int variant = rand.nextInt(2) + 1;
         if(variant == 1){
             Vector2d position = new Vector2d(randX, randY1);
-            if(isOccupiedByPlant(position) == false && isOccupiedByAnimal(position)== false){
-                Plant plant = new Plant(position, false);
+            if(isOccupiedByPlant(position) == false){
+                Plant plant = new Plant(position, false, plantEnergy);
                 if(poisonousArea.doesFit(position)){
                     plant.setPoisonStatus(true);
                 }
@@ -122,8 +131,8 @@ public class DarwinWorld {
             }
         }else{
             Vector2d position = new Vector2d(randX, randY2);
-            if(isOccupiedByPlant(position) == false && isOccupiedByAnimal(position)== false){
-                Plant plant = new Plant(position, false);
+            if(isOccupiedByPlant(position) == false){
+                Plant plant = new Plant(position, false, plantEnergy);
                 if(poisonousArea.doesFit(position)){
                     plant.setPoisonStatus(true);
                 }
@@ -139,55 +148,93 @@ public class DarwinWorld {
             ArrayList<Animal> animalList = entry.getValue();
             for(Animal currAnimal : animalList){
                 currAnimal.move();
-                if(currAnimal.getPosition().getY() > this.height ||
-                        currAnimal.getPosition().getY() < 0){
+                if(currAnimal.getPosition().getX() >= 0 && currAnimal.getPosition().getX() < this.width
+                    && currAnimal.getPosition().getY() >= 0 && currAnimal.getPosition().getY() < this.height){
+
+                    Vector2d newPosition = new Vector2d(currAnimal.getPosition().getX(),
+                    currAnimal.getPosition().getY());
+
+                    currAnimal.energy--;
+                    if(tempAnimals.get(newPosition) == null){
+                        ArrayList<Animal> animals2 = new ArrayList<>();
+                        animals2.add(currAnimal);
+                        tempAnimals.put(newPosition, animals2);
+                    }else{
+                        tempAnimals.get(newPosition).add(currAnimal);
+                    }
+                }
+                if(currAnimal.getPosition().getY() >= this.height &&
+                currAnimal.getPosition().getX() >= this.width || currAnimal.getPosition().getY() < 0 &&
+                currAnimal.getPosition().getX() >= this.width){
                     currAnimal.returnToPreviousPosition();
                     currAnimal.redoLastRotation();
                     currAnimal.rotate(3);
                     currAnimal.energy --;
-                    if(tempAnimals.get(currPosition) == null){
+                    if(tempAnimals.get(currAnimal.getPosition()) == null){
                         ArrayList<Animal> animals2 = new ArrayList<>();
                         animals2.add(currAnimal);
-                        tempAnimals.put(currPosition, animals2);
+                        tempAnimals.put(currAnimal.getPosition(), animals2);
                     }else{
-                        tempAnimals.get(currPosition).add(currAnimal);
+                        tempAnimals.get(currAnimal.getPosition()).add(currAnimal);
                     }
                 }
-                if(currAnimal.getPosition().getX() > this.width) {
+                if(currAnimal.getPosition().getY() >= this.height &&
+                        currAnimal.getPosition().getX() < 0 || currAnimal.getPosition().getY() < 0 &&
+                        currAnimal.getPosition().getX() < 0){
+                    currAnimal.returnToPreviousPosition();
+                    currAnimal.redoLastRotation();
+                    currAnimal.rotate(3);
+                    currAnimal.energy --;
+                    if(tempAnimals.get(currAnimal.getPosition()) == null){
+                        ArrayList<Animal> animals2 = new ArrayList<>();
+                        animals2.add(currAnimal);
+                        tempAnimals.put(currAnimal.getPosition(), animals2);
+                    }else{
+                        tempAnimals.get(currAnimal.getPosition()).add(currAnimal);
+                    }
+                }
+                if(currAnimal.getPosition().getY() >= this.height && currAnimal.getPosition().getX()>=0
+                && currAnimal.getPosition().getX() < this.width||
+                currAnimal.getPosition().getY() < 0 && currAnimal.getPosition().getX()>=0 &&
+                currAnimal.getPosition().getX()<=this.width){
+                    currAnimal.returnToPreviousPosition();
+                    currAnimal.redoLastRotation();
+                    currAnimal.rotate(3);
+                    currAnimal.energy --;
+                    if(tempAnimals.get(currAnimal.getPosition()) == null){
+                        ArrayList<Animal> animals2 = new ArrayList<>();
+                        animals2.add(currAnimal);
+                        tempAnimals.put(currAnimal.getPosition(), animals2);
+                    }else{
+                        tempAnimals.get(currAnimal.getPosition()).add(currAnimal);
+                    }
+                }
+                if(currAnimal.getPosition().getX() >= this.width &&
+                   currAnimal.getPosition().getY() < this.height && currAnimal.getPosition().getY() >= 0) {
                     currAnimal.returnToPreviousPosition();
                     Vector2d newPosition = new Vector2d(0, currAnimal.getPosition().getY());
                     currAnimal.setPosition(newPosition);
                     currAnimal.energy--;
-                    if(tempAnimals.get(currPosition) == null){
+                    if(tempAnimals.get(newPosition) == null){
                         ArrayList<Animal> animals2 = new ArrayList<>();
                         animals2.add(currAnimal);
-                        tempAnimals.put(currPosition, animals2);
+                        tempAnimals.put(newPosition, animals2);
                     }else{
-                        tempAnimals.get(currPosition).add(currAnimal);
+                        tempAnimals.get(newPosition).add(currAnimal);
                     }
                 }
-                if(currAnimal.getPosition().getX() < 0){
+                if(currAnimal.getPosition().getX() < 0 && currAnimal.getPosition().getY() < this.height &&
+                   currAnimal.getPosition().getY() >= 0){
                     currAnimal.returnToPreviousPosition();
-                    Vector2d newPosition = new Vector2d(width, currAnimal.getPosition().getY());
+                    Vector2d newPosition = new Vector2d(width-1, currAnimal.getPosition().getY());
                     currAnimal.setPosition(newPosition);
                     currAnimal.energy--;
-                    if(tempAnimals.get(currPosition) == null){
+                    if(tempAnimals.get(newPosition) == null){
                         ArrayList<Animal> animals2 = new ArrayList<>();
                         animals2.add(currAnimal);
-                        tempAnimals.put(currPosition, animals2);
+                        tempAnimals.put(newPosition, animals2);
                     }else{
-                        tempAnimals.get(currPosition).add(currAnimal);
-                    }
-                }else{
-                    Vector2d newPosition = new Vector2d(currAnimal.getPosition().getX(),
-                            currAnimal.getPosition().getY());
-                    currAnimal.energy--;
-                    if(tempAnimals.get(currPosition) == null){
-                        ArrayList<Animal> animals2 = new ArrayList<>();
-                        animals2.add(currAnimal);
-                        tempAnimals.put(currPosition, animals2);
-                    }else{
-                        tempAnimals.get(currPosition).add(currAnimal);
+                        tempAnimals.get(newPosition).add(currAnimal);
                     }
                 }
             }
@@ -195,18 +242,19 @@ public class DarwinWorld {
         this.animals = tempAnimals;
     }
     public void removeDeadAnimals(){
+        HashMap<Vector2d, ArrayList<Animal>> newAnimals = new HashMap<>();
         for (Map.Entry<Vector2d, ArrayList<Animal>> entry : animals.entrySet()) {
             Vector2d currPosition = entry.getKey();
             ArrayList<Animal> currList = entry.getValue();
+            ArrayList<Animal> newSmallList = new ArrayList<>();
             for(Animal currAnimal : currList){
-                if(currAnimal.getEnergy() <= 0){
-                    animals.get(currPosition).remove(currAnimal);
-                    if(animals.get(currPosition).size() == 0){
-                        animals.remove(currPosition);
-                    }
+                if(currAnimal.getEnergy() > 0){
+                    newSmallList.add(currAnimal);
                 }
             }
+            newAnimals.put(currPosition, newSmallList);
         }
+        animals = newAnimals;
 
     }
     public void eatPlants(){
@@ -215,6 +263,15 @@ public class DarwinWorld {
         for (Map.Entry<Vector2d, ArrayList<Animal>> entry : animals.entrySet()) {
             Vector2d currPosition = entry.getKey();
             ArrayList<Animal> aniList = entry.getValue();
+            if(plants.get(currPosition) == null){
+                updateAnimalsList(tempAnimals, aniList, currPosition);
+            }
+            if(plants.get(currPosition) != null && aniList.size() == 1) {
+                Plant currPlant = plants.get(currPosition);
+                Animal currAnimal = aniList.get(0);
+                consume(currPlant, currAnimal, currPosition, aniList, tempAnimals);
+
+            }
             if(plants.get(currPosition) != null && aniList.size() > 1){
                 aniList.sort((Animal a1, Animal a2) -> Integer.compare(a1.getEnergy(), a2.getEnergy()));
                 Plant currPlant = plants.get(currPosition);
@@ -237,14 +294,11 @@ public class DarwinWorld {
                     }
                 }
                 consume(currPlant, currAnimal, currPosition,aniList, tempAnimals);
-            }if(plants.get(currPosition) != null && aniList.size() == 1) {
-                Plant currPlant = plants.get(currPosition);
-                Animal currAnimal = aniList.get(0);
-                consume(currPlant, currAnimal, currPosition, aniList, tempAnimals);
             }
         }
         this.animals = tempAnimals;
     }
+
     public void consume(Plant currPlant, Animal currAnimal, Vector2d currPosition,
                         ArrayList<Animal> aniList, HashMap<Vector2d, ArrayList<Animal>> tempAnimals){
         if(currPlant.isPoisonous() == false){
@@ -269,7 +323,8 @@ public class DarwinWorld {
                 int plantY = plantPosition.getY();
                 Vector2d potentialPosition = new Vector2d(plantX + 1, plantY);
                 if(fitsToMap(potentialPosition)){
-                    aniList.remove(currPosition);
+                    aniList.remove(currAnimal);
+                    updateAnimalsList(tempAnimals, aniList, currPosition);
                     currAnimal.setPosition(potentialPosition);
                     if(tempAnimals.get(potentialPosition) != null){
                         tempAnimals.get(potentialPosition).add(currAnimal);
@@ -278,11 +333,11 @@ public class DarwinWorld {
                         newSet.add(currAnimal);
                         tempAnimals.put(potentialPosition, newSet);
                     }
-                    updateAnimalsList(tempAnimals, aniList, currPosition);
                 }
                 else{
                     potentialPosition = new Vector2d(plantX - 1, plantY);
-                    aniList.remove(currPosition);
+                    aniList.remove(currAnimal);
+                    updateAnimalsList(tempAnimals, aniList, currPosition);
                     currAnimal.setPosition(potentialPosition);
                     if(tempAnimals.get(potentialPosition) != null){
                         tempAnimals.get(potentialPosition).add(currAnimal);
@@ -291,7 +346,6 @@ public class DarwinWorld {
                         newSet.add(currAnimal);
                         tempAnimals.put(potentialPosition, newSet);
                     }
-                    updateAnimalsList(tempAnimals, aniList, currPosition);
                 }
 
             }
@@ -300,12 +354,15 @@ public class DarwinWorld {
     public void updateAnimalsList(HashMap<Vector2d, ArrayList<Animal>> tempAnimals,
     ArrayList<Animal> aniList, Vector2d position){
         if(tempAnimals.get(position) != null){
-            for(int i=0; i<aniList.size(); i++){
-                Animal animal = aniList.get(i);
-                tempAnimals.get(position).add(animal);
+            for(Animal currAnimal : aniList){
+                tempAnimals.get(position).add(currAnimal);
             }
         }else{
-            tempAnimals.put(position, aniList);
+            ArrayList<Animal> newAniList = new ArrayList<>();
+            for(Animal currAnimal : aniList){
+                newAniList.add(currAnimal);
+            }
+            tempAnimals.put(position, newAniList);
         }
     }
     public void updateAnimalAge(){
@@ -331,7 +388,10 @@ public class DarwinWorld {
                 Vector2d position = new Vector2d(x, y);
 
                 if (isOccupiedByAnimal(position)) {
-                    result.append("A ");
+                    ArrayList<Animal> currList = animals.get(position);
+                    for(Animal currAnimal : currList){
+                        result.append(currAnimal);
+                    }
                 } else if (isOccupiedByPlant(position)) {
                     result.append("* ");
                 } else {
@@ -349,7 +409,7 @@ public class DarwinWorld {
     public boolean fitsToMap(Vector2d position){
         int x = position.getX();
         int y = position.getY();
-        if(x >= 0 && x <= width && y >= 0 && y <= height){
+        if(x >= 0 && x < width && y >= 0 && y < height){
             return true;
         }
         return false;
@@ -358,9 +418,9 @@ public class DarwinWorld {
         for(Map.Entry<Vector2d, ArrayList<Animal>> entry : animals.entrySet()){
             Vector2d position = entry.getKey();
             ArrayList<Animal> aniList = entry.getValue();
-            Animal animal1 = aniList.get(0);
-            Animal animal2 = aniList.get(1);
-            if(aniList.size() >= 2){
+            Animal animal1 = null;
+            Animal animal2 = null;
+            if(aniList.size() >= 3){
                 animal1 = aniList.get(0);
                 animal2 = aniList.get(1);
                 aniList.sort((Animal a1, Animal a2) -> Integer.compare(a1.getEnergy(), a2.getEnergy()));
@@ -389,49 +449,83 @@ public class DarwinWorld {
                         }
                     }
                 }
-
-                int energy1 = animal1.getEnergy();
-                int energy2 = animal2.getEnergy();
-                if(energy1 >= minimalReproduceEnergy && energy2 >= minimalReproduceEnergy){
-                    int sumEnergy = energy1 + energy2;
-                    double daddysPart = energy1/sumEnergy;
-                    double mommysPart = energy2/sumEnergy;
-                    int kidsEnergy = (int)(daddysPart*energy1 + mommysPart*energy2);
-                    int daddyGenomeLength = (int)(daddysPart*animal1.getGenome().length);
-                    int mommyGenomeLength = (int)(mommysPart*animal1.getGenome().length);
-                    Random randParrent = new Random();
-                    int choice = randParrent.nextInt(2) + 1;
-                    int[] kidGenome = new int[animal1.getGenome().length];
-                    java.util.Arrays.fill(kidGenome, 0);
-                    if(choice == 1){
-                        for(int i=0; i<daddyGenomeLength; i++){
-                            kidGenome[i] = animal1.getGenome()[i];
-                        }
-                        for(int i=0; i<mommyGenomeLength; i++){
-                            kidGenome[i+daddyGenomeLength] = animal2.getGenome()[i+daddyGenomeLength];
-                        }
-                    }else{
-                        for(int i=0; i<mommyGenomeLength; i++){
-                            kidGenome[i] = animal2.getGenome()[i];
-                        }
-                        for(int i=0; i<daddyGenomeLength; i++){
-                            kidGenome[i+mommyGenomeLength] = animal1.getGenome()[i+mommyGenomeLength];
-                        }
-                    }
-                    mutateGenome(kidGenome);
-                    Animal kid = new Animal(new Vector2d(position.getX(), position.getY()), kidsEnergy, kidGenome);
-                }
+                mommyAndDaddyTime(animal1, animal2, position);
+            }
+            if(aniList.size() == 2){
+                animal1 = aniList.get(0);
+                animal2 = aniList.get(1);
+                mommyAndDaddyTime(animal1, animal2, position);
             }
         }
     }
+
+    public void mommyAndDaddyTime(Animal animal1, Animal animal2, Vector2d position){
+        int energy1 = animal1.getEnergy();
+        int energy2 = animal2.getEnergy();
+        if(energy1 >= minimalReproduceEnergy && energy2 >= minimalReproduceEnergy){
+            int sumEnergy = energy1 + energy2;
+            double daddysPart = energy1/sumEnergy;
+            double mommysPart = energy2/sumEnergy;
+            int kidsEnergy = (int)(reproduceEnergyUsage*energy1 + reproduceEnergyUsage*energy2);
+            animal1.setEnergy(energy1 - (int)(reproduceEnergyUsage*energy1));
+            animal2.setEnergy(energy2 - (int)(reproduceEnergyUsage*energy2));
+            int daddyGenomeLength = (int)(daddysPart*genomeLength);
+            int mommyGenomeLength = (int)(mommysPart*genomeLength);
+            Random randParrent = new Random();
+            int choice = randParrent.nextInt(2) + 1;
+            int[] kidGenome = new int[this.genomeLength];
+            java.util.Arrays.fill(kidGenome, 0);
+            if(choice == 1){
+                for(int i=0; i<daddyGenomeLength; i++){
+                    kidGenome[i] = animal1.getGenome()[i];
+                }
+                for(int i=0; i<mommyGenomeLength; i++){
+                    kidGenome[i+daddyGenomeLength] = animal2.getGenome()[i+daddyGenomeLength];
+                }
+            }else{
+                for(int i=0; i<mommyGenomeLength; i++){
+                    kidGenome[i] = animal2.getGenome()[i];
+                }
+                for(int i=0; i<daddyGenomeLength; i++){
+                    kidGenome[i+mommyGenomeLength] = animal1.getGenome()[i+mommyGenomeLength];
+                }
+            }
+            mutateGenome(kidGenome);
+            Animal kid = new Animal(new Vector2d(position.getX(), position.getY()), kidsEnergy, kidGenome);
+            this.animals.get(position).add(kid);
+        }
+    }
     public void mutateGenome(int[] genome){
-        int genomeLength = genome.length;
         Random rand = new Random();
-        int mutationsAmount = rand.nextInt(genomeLength);
-        for(int i=0; i<mutationsAmount; i++){
+        for(int i=0; i<mutationAmount; i++){
             int randomPosition = rand.nextInt(genomeLength);
             int randomGene = rand.nextInt(8);
             genome[randomPosition] = randomGene;
         }
+    }
+    public void randomPlaceAnimals(int amount){
+        Random rand = new Random();
+        for(int i=0; i<amount; i++){
+            int randX = rand.nextInt(width);
+            int randY = rand.nextInt(height);
+            Vector2d randPosition = new Vector2d(randX, randY);
+            int[] genome = new int[genomeLength];
+            for(int z=0; z<genomeLength; z++){
+                int randGene = rand.nextInt(8);
+                genome[z] = randGene;
+            }
+            Animal animal = new Animal(randPosition, initialAnimalEnergy, genome);
+            if(animals.get(randPosition) == null){
+                ArrayList<Animal> aniList = new ArrayList<>();
+                aniList.add(animal);
+                animals.put(randPosition, aniList);
+            }else{
+                animals.get(randPosition).add(animal);
+            }
+        }
+    }
+
+    public int getPlantEnergy() {
+        return plantEnergy;
     }
 }
