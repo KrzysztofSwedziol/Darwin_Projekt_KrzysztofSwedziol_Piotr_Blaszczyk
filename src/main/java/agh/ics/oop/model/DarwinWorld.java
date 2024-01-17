@@ -528,4 +528,7 @@ public class DarwinWorld {
     public int getPlantEnergy() {
         return plantEnergy;
     }
+    public int getWidth(){return this.width;}
+    public int getHeight(){return this.height;}
+    public HashMap<Vector2d, ArrayList<Animal>> getAnimals(){return this.animals;}
 }
