@@ -2,22 +2,24 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.OptionsParser;
 import agh.ics.oop.Simulation;
-import agh.ics.oop.model.DarwinWorld;
-import agh.ics.oop.model.MoveDirection;
-import agh.ics.oop.model.Vector2d;
-import agh.ics.oop.model.WorldElement;
+import agh.ics.oop.model.*;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.util.Map;  // Add this import
 import java.util.HashMap;  // Add this import
-import agh.ics.oop.model.Animal;
-import agh.ics.oop.model.Plant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,18 +79,8 @@ public class SimulationPresenter {
 
         this.map = map;
     }
-
-    public void drawMap() {
-
-    }
-    private void clearGrid() {
-        controlCenter.getChildren().clear();
-        mapGrid.getChildren().clear();
-    }
-
     @FXML
     public void onSimulationStartClicked() {
-        System.out.println("hello");
         int width = Integer.parseInt(widthContainer.getText());
         int height = Integer.parseInt(heightContainer.getText());
         int ID = Integer.parseInt(IDContainer.getText());
@@ -108,9 +100,37 @@ public class SimulationPresenter {
                 , genomeLength);
 
         setWorldMap(darwinWorld);
-        //clearGrid();
 
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getClassLoader().getResource("action.fxml"));
+        Stage newStage = new Stage();
+        try {
+            Parent root = loader.load();
+            newStage.setTitle("Darwin");
+            newStage.setScene(new Scene(root));
+            newStage.setResizable(false);
+            newStage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        ((ActionPresenter)loader.getController()).setParameters(this.map, daysAmount);
 
 
     }
 }
+
+
+
+/*FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getClassLoader().getResource("action.fxml"));
+        ((ActionPresenter)loader.getController()).setMap(this.map);
+        Stage newStage = new Stage();
+        try {
+            Parent root = loader.load();
+            newStage.setTitle("Darwin");
+            newStage.setScene(new Scene(root));
+            newStage.setResizable(false);
+            newStage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/

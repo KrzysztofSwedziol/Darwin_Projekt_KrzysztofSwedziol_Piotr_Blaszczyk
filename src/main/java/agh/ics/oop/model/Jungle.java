@@ -20,9 +20,11 @@ public class Jungle {
         this.poisonousArea = poisonousArea;
     }
     public void randomPlacePlant(){
-        Random rand = new Random();
-        int randX = rand.nextInt(this.width);
-        int randY = rand.nextInt(this.height) + this.coordinates.getBottom();
+        int randX = (int)(Math.random()*(this.width));
+        int randY = (int)(Math.random()*(this.height)) + this.coordinates.getBottom();
+        //Random rand = new Random();
+        //int randX = rand.nextInt(this.width);
+        //int randY = rand.nextInt(this.height) + this.coordinates.getBottom();
         Vector2d position = new Vector2d(randX, randY);
         if(owner.isOccupiedByPlant(position) == false){
             Plant plant = new Plant(position, false, owner.getPlantEnergy());

@@ -14,7 +14,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="750.0" minWidth="1250.0"
-            fx:controller="agh.ics.oop.presenter.SimulationPresenter">
+            fx:controller="agh.ics.oop.presenter.SimulationPresenter" style="-fx-background-color: lightblue;">
     <left>
         <GridPane fx:id = "mapGrid" style="-fx-background-color: lightblue;">
            <ImageView fitWidth="1110" fitHeight="750">
