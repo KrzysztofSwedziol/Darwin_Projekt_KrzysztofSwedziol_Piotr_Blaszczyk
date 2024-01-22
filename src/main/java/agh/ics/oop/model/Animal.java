@@ -116,19 +116,19 @@ public class Animal {
     public String toString() {
         switch (this.orientation) {
             case NORTH:
-                return "N ";
+                return "N";
             case NORTHEAST:
                 return "NE";
             case EAST:
-                return "E ";
+                return "E";
             case SOUTHEAST:
                 return "SE";
             case SOUTH:
-                return "S ";
+                return "S";
             case SOUTHWEST:
                 return "SW";
             case WEST:
-                return "W ";
+                return "W";
             case NORTHWEST:
                 return "NW";
             default:

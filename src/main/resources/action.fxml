@@ -14,21 +14,19 @@
             minHeight="750.0" prefWidth="1250.0"
             fx:controller="agh.ics.oop.presenter.ActionPresenter">
     <left>
-        <VBox minWidth="750.0" style="-fx-background-color: darkgreen;">
-
-        </VBox>
+        <GridPane fx:id="mapGrid" gridLinesVisible="true"/>
     </left>
     <right>
-        <VBox minWidth="500" style="-fx-background-color: burlywood;">
+        <VBox fx:id = "mapBox" minWidth="500" style="-fx-background-color: burlywood;">
             <VBox fx:id = "Statistics">
                 <Label fx:id = "animals" style="-fx-font-size: 20px; -fx-font-family: 'Arial';">
-                    oo
+                    Animals :
                 </Label>
                 <Label fx:id = "plants" style="-fx-font-size: 20px; -fx-font-family: 'Arial';">
-                    oo
+                    plants :
                 </Label>
                 <Label fx:id = "day" style="-fx-font-size: 20px; -fx-font-family: 'Arial';">
-                    oo
+                    Day :
                 </Label>
 
             </VBox>
