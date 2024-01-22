@@ -1,5 +1,8 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.presenter.ActionPresenter;
+import javafx.application.Platform;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -7,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class DarwinWorld {
+public class DarwinWorld implements Runnable{
     //private Map<Vector2d, Animal> animals = new HashMap<>();
+    private boolean running = false;
+    private ActionPresenter presenter;
     private HashMap<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
     private final Map<Vector2d, Plant> plants = new HashMap<>();
     private Jungle jungle;
@@ -49,6 +54,7 @@ public class DarwinWorld {
         setJungle();
         dailyPlantUpdate(plantAmount);
         randomPlaceAnimals(initialAnimals);
+
     }
     public void placePlant(Vector2d position, Plant plant){
         if(isOccupiedByPlant(position) == false) {
@@ -100,7 +106,10 @@ public class DarwinWorld {
         moveAnimals();
         eatPlants();
         reproduceAnimals();
-        //updateAnimalAge();
+        //updateAnimalAge()
+        Platform.runLater(()->{
+            presenter.reDraw();
+        });
     }
     public void dailyPlantUpdate(int plantAmount){
         Random rand = new Random();
@@ -524,6 +533,9 @@ public class DarwinWorld {
             }
         }
     }
+    public void setPresenter(ActionPresenter presenter){
+        this.presenter = presenter;
+    }
 
     public int getPlantEnergy() {
         return plantEnergy;
@@ -531,4 +543,16 @@ public class DarwinWorld {
     public int getWidth(){return this.width;}
     public int getHeight(){return this.height;}
     public HashMap<Vector2d, ArrayList<Animal>> getAnimals(){return this.animals;}
+    public void run(){
+        while(true){
+            System.out.println("dupa");
+            this.updateDay();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                System.out.println("Wystąpił błąd podczas próby uśpienia wątku: " + e.getMessage());
+            }
+        }
+
+    }
 }

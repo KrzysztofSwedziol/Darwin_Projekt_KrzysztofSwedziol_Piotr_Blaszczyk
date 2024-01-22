@@ -98,7 +98,6 @@ public class SimulationPresenter {
         DarwinWorld darwinWorld = new DarwinWorld(width, height, ID, plantAmount, plantEnergy, dailyPlants
                 , initialAnimals, initialAnimalEnergy, reproduceEnergy, reproduceEnergyUsage, mutationAmount
                 , genomeLength);
-
         setWorldMap(darwinWorld);
 
         FXMLLoader loader = new FXMLLoader();
@@ -115,22 +114,21 @@ public class SimulationPresenter {
         }
         ((ActionPresenter)loader.getController()).setParameters(this.map, daysAmount);
 
-
     }
 }
 
 
 
-/*FXMLLoader loader = new FXMLLoader();
+    /*FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("action.fxml"));
-        ((ActionPresenter)loader.getController()).setMap(this.map);
-        Stage newStage = new Stage();
-        try {
-            Parent root = loader.load();
-            newStage.setTitle("Darwin");
-            newStage.setScene(new Scene(root));
-            newStage.setResizable(false);
-            newStage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
+                Stage newStage = new Stage();
+                try {
+                Parent root = loader.load();
+                newStage.setTitle("Darwin");
+                newStage.setScene(new Scene(root));
+                newStage.setResizable(false);
+                newStage.show();
+                } catch (IOException e) {
+                throw new RuntimeException(e);
+                }
+                ((ActionPresenter)loader.getController()).setParameters(this.map, daysAmount);*/

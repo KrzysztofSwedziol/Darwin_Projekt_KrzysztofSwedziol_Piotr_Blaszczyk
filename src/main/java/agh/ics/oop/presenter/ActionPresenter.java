@@ -185,15 +185,22 @@ public class ActionPresenter {
     }
     @FXML
     public void onSimulationStartClicked(){
-        for(int i=0; i<this.days; i++){
-            new Thread(() -> {
-                clearGrid();
-                Platform.runLater(this::drawMap);
-            }).start();
-            this.world.updateDay();
+        /*for(int i=0; i<this.days; i++){
+                Platform.runLater(() -> {
+                    this.world.run();
+                    clearGrid();
+                    drawMap();
+                });
             animals.setText("Animals: " + this.world.getAnimals().size());
             plants.setText("Plants: " + this.world.getPlants().size());
             day.setText("Day: " + (i+1));
-        }
+        }*/
+        this.world.setPresenter(this);
+        Thread worldThread = new Thread(this.world::run);
+        worldThread.start();
+    }
+    public void reDraw(){
+        clearGrid();
+        drawMap();
     }
 }
