@@ -545,10 +545,9 @@ public class DarwinWorld implements Runnable{
     public HashMap<Vector2d, ArrayList<Animal>> getAnimals(){return this.animals;}
     public void run(){
         while(true){
-            System.out.println("dupa");
             this.updateDay();
             try {
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 System.out.println("Wystąpił błąd podczas próby uśpienia wątku: " + e.getMessage());
             }
