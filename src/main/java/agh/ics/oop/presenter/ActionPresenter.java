@@ -196,11 +196,21 @@ public class ActionPresenter {
             day.setText("Day: " + (i+1));
         }*/
         this.world.setPresenter(this);
+        this.world.setRunningTrue();
         Thread worldThread = new Thread(this.world::run);
         worldThread.start();
+    }
+    public void resumeClicked(){
+        this.world.setRunningTrue();
+    }
+    public void pauseClicked(){
+        this.world.setRunningFalse();
     }
     public void reDraw(){
         clearGrid();
         drawMap();
+        animals.setText("animals amount: " + this.world.getAnimals().size());
+        plants.setText("plants amount: " + this.world.getPlants().size());
+        day.setText("day: " + this.world.getDay());
     }
 }

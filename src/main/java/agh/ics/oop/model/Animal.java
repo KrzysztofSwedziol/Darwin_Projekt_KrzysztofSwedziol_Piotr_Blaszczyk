@@ -112,6 +112,7 @@ public class Animal {
         this.age++;
     }
 
+
     @Override
     public String toString() {
         switch (this.orientation) {

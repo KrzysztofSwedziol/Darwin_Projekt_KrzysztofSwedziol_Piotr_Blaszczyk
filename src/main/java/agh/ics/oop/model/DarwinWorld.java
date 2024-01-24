@@ -544,7 +544,7 @@ public class DarwinWorld implements Runnable{
     public int getHeight(){return this.height;}
     public HashMap<Vector2d, ArrayList<Animal>> getAnimals(){return this.animals;}
     public void run(){
-        while(true){
+        while(this.running){
             this.updateDay();
             try {
                 Thread.sleep(2000);
@@ -553,5 +553,14 @@ public class DarwinWorld implements Runnable{
             }
         }
 
+    }
+    public void setRunningTrue(){
+        this.running = true;
+    }
+    public void setRunningFalse(){
+        this.running = false;
+    }
+    public int getDay(){
+        return this.day;
     }
 }
