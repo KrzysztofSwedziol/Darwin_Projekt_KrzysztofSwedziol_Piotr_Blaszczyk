@@ -28,16 +28,17 @@
                 <Label fx:id = "day" style="-fx-font-size: 20px; -fx-font-family: 'Arial';">
                     Day :
                 </Label>
+                <Label>
+                    Legend :
+
+                </Label>
 
             </VBox>
             <HBox>
                 <Button fx:id = "startButton" onAction="#onSimulationStartClicked">
-                    start
+                    start/resume
                 </Button>
-                <Button>
-                    resume
-                </Button>
-                <Button>
+                <Button fx:id = "pause" onAction = "#pauseClicked">
                     pause
                 </Button>
             </HBox>

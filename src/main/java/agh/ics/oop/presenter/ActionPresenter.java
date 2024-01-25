@@ -79,7 +79,6 @@ public class ActionPresenter {
     public Canvas setCanvas(Image image){
         Canvas canvas = new Canvas(this.pixelCellWidth-1, this.pixelCellHeight-1);
         GraphicsContext container = canvas.getGraphicsContext2D();
-        //Image image = new Image(path);
         container.drawImage(image, 0, 0, this.pixelCellWidth, this.pixelCellHeight);
         container = null;
         System.gc();
@@ -185,16 +184,6 @@ public class ActionPresenter {
     }
     @FXML
     public void onSimulationStartClicked(){
-        /*for(int i=0; i<this.days; i++){
-                Platform.runLater(() -> {
-                    this.world.run();
-                    clearGrid();
-                    drawMap();
-                });
-            animals.setText("Animals: " + this.world.getAnimals().size());
-            plants.setText("Plants: " + this.world.getPlants().size());
-            day.setText("Day: " + (i+1));
-        }*/
         this.world.setPresenter(this);
         this.world.setRunningTrue();
         Thread worldThread = new Thread(this.world::run);

@@ -32,11 +32,12 @@ public class DarwinWorld implements Runnable{
     private int plantAmount;
     private int dailyPlants;
     private int area;
+    private int variant;
 
 
     public DarwinWorld(int width, int height, int ID, int plantAmount, int plantEnergy, int dailyPlants,
         int initialAnimals, int initialAnimalEnergy, int minimalReproduceEnergy, double reproduceEnergyUsage,
-        int mutationAmount, int genomeLength){
+        int mutationAmount, int genomeLength, int variant){
         this.width = width;
         this.height = height;
         this.ID = ID;
@@ -49,6 +50,7 @@ public class DarwinWorld implements Runnable{
         this.reproduceEnergyUsage = reproduceEnergyUsage;
         this.mutationAmount = mutationAmount;
         this.genomeLength = genomeLength;
+        this.variant = variant;
         this.area = this.width*this.height;
         setPoisonousArea();
         setJungle();
@@ -93,10 +95,14 @@ public class DarwinWorld implements Runnable{
         this.jungle = equatorJungle;
     }
     public void setPoisonousArea(){
-        int side = (int)(Math.sqrt(0.2*area));
-        Coordinates coordinates = new Coordinates(0,side,side,0);
-        PoisonousArea poisonousArea = new PoisonousArea(coordinates, side, side);
-        this.poisonousArea = poisonousArea;
+        if(variant == 2){
+            int side = (int)(Math.sqrt(0.2*area));
+            Coordinates coordinates = new Coordinates(0,side,side,0);
+            PoisonousArea poisonousArea = new PoisonousArea(coordinates, side, side);
+            this.poisonousArea = poisonousArea;
+        }else{
+            this.poisonousArea = null;
+        }
     }
 
     public void updateDay(){
@@ -106,7 +112,7 @@ public class DarwinWorld implements Runnable{
         moveAnimals();
         eatPlants();
         reproduceAnimals();
-        //updateAnimalAge()
+        updateAnimalAge();
         Platform.runLater(()->{
             presenter.reDraw();
         });
@@ -128,13 +134,15 @@ public class DarwinWorld implements Runnable{
         int randY1 = rand.nextInt(this.jungle.getCoordinates().getBottom());
         int randY2 = rand.nextInt(this.height - this.jungle.getCoordinates().getCeiling()) +
         this.jungle.getCoordinates().getCeiling();
-        int variant = rand.nextInt(2) + 1;
-        if(variant == 1){
+        int option = rand.nextInt(2) + 1;
+        if(option == 1){
             Vector2d position = new Vector2d(randX, randY1);
             if(isOccupiedByPlant(position) == false){
                 Plant plant = new Plant(position, false, plantEnergy);
-                if(poisonousArea.doesFit(position)){
-                    plant.setPoisonStatus(true);
+                if(this.poisonousArea != null) {
+                    if (poisonousArea.doesFit(position)) {
+                        plant.setPoisonStatus(true);
+                    }
                 }
                 this.plants.put(position, plant);
             }
@@ -142,8 +150,10 @@ public class DarwinWorld implements Runnable{
             Vector2d position = new Vector2d(randX, randY2);
             if(isOccupiedByPlant(position) == false){
                 Plant plant = new Plant(position, false, plantEnergy);
-                if(poisonousArea.doesFit(position)){
-                    plant.setPoisonStatus(true);
+                if(this.poisonousArea != null){
+                    if(poisonousArea.doesFit(position)){
+                        plant.setPoisonStatus(true);
+                    }
                 }
                 this.plants.put(position, plant);
             }
@@ -500,7 +510,7 @@ public class DarwinWorld implements Runnable{
                 }
             }
             mutateGenome(kidGenome);
-            Animal kid = new Animal(new Vector2d(position.getX(), position.getY()), kidsEnergy, kidGenome);
+            Animal kid = new Animal(new Vector2d(position.getX(), position.getY()), kidsEnergy, kidGenome, this.variant);
             this.animals.get(position).add(kid);
         }
     }
@@ -523,7 +533,7 @@ public class DarwinWorld implements Runnable{
                 int randGene = rand.nextInt(8);
                 genome[z] = randGene;
             }
-            Animal animal = new Animal(randPosition, initialAnimalEnergy, genome);
+            Animal animal = new Animal(randPosition, initialAnimalEnergy, genome, this.variant);
             if(animals.get(randPosition) == null){
                 ArrayList<Animal> aniList = new ArrayList<>();
                 aniList.add(animal);

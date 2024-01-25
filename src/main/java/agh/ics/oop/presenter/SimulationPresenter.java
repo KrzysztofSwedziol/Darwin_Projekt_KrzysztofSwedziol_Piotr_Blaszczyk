@@ -71,6 +71,8 @@ public class SimulationPresenter {
 
     @FXML
     private TextField daysAmountContainer;
+    @FXML
+    private TextField variantSelect;
 
     private static final int CELL_WIDTH = 45;
     private static final int CELL_HEIGHT = 45;
@@ -94,10 +96,11 @@ public class SimulationPresenter {
         int mutationAmount = Integer.parseInt(mutationAmountContainer.getText());
         int genomeLength = Integer.parseInt(genomeLengthContainer.getText());
         int daysAmount = Integer.parseInt(daysAmountContainer.getText());
+        int variant = Integer.parseInt(variantSelect.getText());
 
         DarwinWorld darwinWorld = new DarwinWorld(width, height, ID, plantAmount, plantEnergy, dailyPlants
                 , initialAnimals, initialAnimalEnergy, reproduceEnergy, reproduceEnergyUsage, mutationAmount
-                , genomeLength);
+                , genomeLength, variant);
         setWorldMap(darwinWorld);
 
         FXMLLoader loader = new FXMLLoader();

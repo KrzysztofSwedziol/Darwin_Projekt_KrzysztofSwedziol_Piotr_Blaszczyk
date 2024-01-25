@@ -39,7 +39,12 @@
             <TextField fx:id = "mutationAmountContainer" promptText="Enter Mutation Amount" GridPane.rowIndex="10"/>
             <TextField fx:id = "genomeLengthContainer" promptText="Enter Genome Length" GridPane.rowIndex="11"/>
             <TextField fx:id = "daysAmountContainer" promptText="Enter Days Amount" GridPane.rowIndex="12"/>
+            <TextField fx:id = "variantSelect" promptText="variant 1/2" GridPane.rowIndex="13"/>
             <Label GridPane.rowIndex="13"/>
+            <Label GridPane.rowIndex="14">
+                1 Standard Variation
+                2 Poisonous plants and back and forth genome
+            </Label>
             <HBox GridPane.rowIndex="15" alignment="CENTER">
                 <Button fx:id = "startButton" text = "Start" onAction="#onSimulationStartClicked"
                         style="-fx-font-size: 20px; -fx-font-family: 'Arial'; -fx-background-radius: 30;

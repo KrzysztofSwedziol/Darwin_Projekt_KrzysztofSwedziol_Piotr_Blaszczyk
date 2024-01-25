@@ -28,8 +28,10 @@ public class Jungle {
         Vector2d position = new Vector2d(randX, randY);
         if(owner.isOccupiedByPlant(position) == false){
             Plant plant = new Plant(position, false, owner.getPlantEnergy());
-            if(poisonousArea.doesFit(position)){
-                plant.setPoisonStatus(true);
+            if(poisonousArea != null){
+                if(poisonousArea.doesFit(position)){
+                    plant.setPoisonStatus(true);
+                }
             }
             owner.placePlant(position, plant);
         }

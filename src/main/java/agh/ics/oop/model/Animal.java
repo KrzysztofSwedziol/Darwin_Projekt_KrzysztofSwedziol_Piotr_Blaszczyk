@@ -9,6 +9,7 @@ public class Animal {
     private int[] genome;
     private int genomeLength;
     private int currGen;
+    private int variant;
     private boolean whereToStart;
     //if its true then we move according to genome from left to right
     //and when its false we go from right to left
@@ -18,7 +19,7 @@ public class Animal {
         this.orientation = MapDirection.NORTH;
         this.currGen = 0;
     }
-    public Animal(Vector2d initialPosition, int energy, int[] genome){
+    public Animal(Vector2d initialPosition, int energy, int[] genome, int variant){
         this.position = initialPosition;
         this.orientation = MapDirection.NORTH;
         this.energy = energy;
@@ -28,16 +29,31 @@ public class Animal {
         this.age = 0;
         this.kidsAmount = 0;
         this.whereToStart = true;
+        this.variant = variant;
     }
     public void rotate(int rotates){
         this.orientation = this.orientation.turn(rotates);
     }
     public void move(){
-        if(whereToStart == true){
-            moveLeftToRight();
+        if(variant == 2){
+            if(whereToStart == true){
+                moveLeftToRight();
+            }else{
+                moveRightToLeft();
+            }
         }else{
-            moveRightToLeft();
+            moveNormal();
         }
+    }
+    public void moveNormal(){
+        if(currGen == genomeLength){
+            currGen = 0;
+        }
+        rotate(this.genome[this.currGen]);
+        Vector2d currMove = this.orientation.toUnitVector();
+        this.previousPosition = new Vector2d(position.getX(), position.getY());
+        this.position = this.position.add(currMove);
+        this.currGen++;
     }
     public void moveLeftToRight(){
         if(currGen == genomeLength){
