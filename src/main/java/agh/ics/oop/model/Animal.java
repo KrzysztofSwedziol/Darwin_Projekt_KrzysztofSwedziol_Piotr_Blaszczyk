@@ -152,4 +152,16 @@ public class Animal {
                 return "";
         }
     }
+
+    public MapDirection getOrientation() {
+        return this.orientation;
+    }
+
+    public void setGenome(int[] newGenome) {
+        this.genome = new int[newGenome.length];
+        System.arraycopy(newGenome, 0, this.genome, 0, newGenome.length);
+        this.genomeLength = newGenome.length;
+        this.currGen = 0;
+    }
+
 }
